@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "TinySocialNetworkProto";
+option objc_class_prefix = "TSN";
+
+package tsn;
+
+// The Social Network Service
+service SNetwork {
+
+	rpc create_user (CreateRequest) returns (CreateReply) {}
+
+	rpc follow (PersonRequest) returns (PersonReply) {}
+
+	rpc unfollow (PersonRequest) returns (PersonReply) {}
+
+	rpc list (ListRequest) returns (ListReply) {}
+
+	rpc timeline (stream TimelineStream) returns (stream TimelineStream) {}
+
+}
+
+message CreateRequest {
+	string username = 1;
+}
+
+message CreateReply {
+	string status = 1;
+}
+
+message PersonRequest {
+	string requestuser = 1;
+	string targetuser = 2;
+}
+
+message PersonReply {
+	string status = 1;
+}
+
+message ListRequest {
+	string username = 1;
+}
+
+message ListReply {
+	repeated string users = 1;
+	repeated string followers = 2;
+	string status = 3;
+}
+
+message TimelineStream {
+	string username = 1;
+	string post = 2;
+	string time = 3;
+}

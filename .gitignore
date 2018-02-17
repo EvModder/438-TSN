@@ -1,0 +1,7 @@
+*.o
+*.json
+tsd
+tsc
+*.pb.*
+*.grpc.*
+server_data/
