@@ -57,9 +57,8 @@ void load_users(){
 
 vector<string> get_followers(string user){
 	string file_contents = load_file(GLOBAL_DIR + user + "/followers.txt");
-	cout << "Value of get_followers() for " << user << ": " << file_contents << endl;
 	vector<string> followers;
-	split_str(followers, file_contents, ' ');
+	split_str(followers, file_contents, '\n');
 	return followers;
 }
 
@@ -173,13 +172,13 @@ class SNetworkServiceImpl final : public SNetwork::Service {
 		// Give them the last 20 events from their timeline
 		vector<string> lines = load_file_ending(GLOBAL_DIR + username + "/timeline.txt", 20);
 		for(string line : lines){
-			/*TODO
-			TimelineStream send_obj;
-			send_obj.set_username(users[current_user].timeline[i].username);
-			send_obj.set_post(users[current_user].timeline[i].post);
-			send_obj.set_time(users[current_user].timeline[i].time);
-			stream->Write(send_obj);
-			*/
+			vector<string> post_data;
+			split_str(post_data, line, '|');
+			TimelineStream t;
+			t.set_username(post_data[0]);
+			t.set_post(post_data[1]);
+			t.set_time(post_data[2]);
+			stream->Write(t);
 		}
 
 		TimelineStream t;
@@ -197,8 +196,6 @@ class SNetworkServiceImpl final : public SNetwork::Service {
 			string post_str = join_str(post_vec.begin(), post_vec.end(), '|', true, sep);
 
 			// Add this post to my timeline
-			cout << "Incoming post from: " << poster << endl;
-			cout << "Stringified-post: " << post_str << endl;
 			append_file(GLOBAL_DIR + poster + "/timeline.txt", post_str);
 
 			// Send this post out to all the followers

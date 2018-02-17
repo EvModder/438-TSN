@@ -166,23 +166,24 @@ void Client::processTimeline(){
 	stream->Write(t);
 
 	// Thread for user input
-	thread user_in([uname, stream]() {
+	thread user_in([uname, stream](){
 		TimelineStream t;
 		string msg;
 		while(true){
 			msg = getPostMessage();
+			msg[msg.size()-1] = '\0';//remove trailing newline
 			t.set_username(uname);
 			t.set_post(msg);
-			t.set_time("");
+			t.set_time("");//This will be done server-side
 			stream->Write(t);
 		}
 		stream->WritesDone();
 	});
 
 	// Thread for incoming message output
-	thread serv_out([stream]() {
+	thread serv_out([stream](){
 		TimelineStream t;
-		while(stream->Read(&t)) {
+		while(stream->Read(&t)){
 			struct tm tm;
 			strptime(t.time().c_str(), "%d-%m-%Y %H-%M-%S", &tm);
 			time_t time = mktime(&tm);

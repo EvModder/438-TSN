@@ -41,7 +41,7 @@ bool is_escaped(const std::string& host, int i){
 void split_str(std::vector<std::string>& res, std::string str, char delim, bool escape=true){
 	int i = str.find(delim);
 	if(escape){
-		while(is_escaped(str, i)) i = str.find(i+1, delim);
+		while(i > 0 && is_escaped(str, i)) i = str.find(delim, i+1);
 	}
 	if(i == -1) res.push_back(str);
 	else{
@@ -81,6 +81,7 @@ bool make_dir(const std::string& dirname){
 	return mkdir(dirname.c_str(), S_IRWXU | S_IRWXG | S_IRWXO) == 0;
 }
 
+//#include <iostream>
 // Unnecessarily optimized function to read the last n lines of a file!
 // I owe a lot of internet sources for this one. Primary info source:
 // http://en.cppreference.com/w/cpp/io/basic_fstream
@@ -94,8 +95,9 @@ std::vector<std::string> load_file_ending(const std::string& filename, int n=20)
 	std::ostringstream ss;
 	char c;
 	int num_read = 0;
-	for(int i=i; i<len; ++i){
+	for(int i=0; i<=len; ++i){
 		c = file.get();
+		//std::cout << "got: "<<c<<std::endl;
 		if(c == '\n'){
 			if(ss.tellp()){
 				lines.push_back(ss.str());
